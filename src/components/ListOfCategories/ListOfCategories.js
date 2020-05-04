@@ -40,7 +40,8 @@ export const ListOfCategories = () => {
       {
         loading
           ? <Loading><Skeleton circle height={75} width={75} duration={100} /><Skeleton height={20} width={75} duration={100} /></Loading>
-          : categories.map(category => <Item key={category.id}><Category {...category} /></Item>)
+          // Al componente Category vamos a pasarle una nueva prop llamada path en donde vamos a construir el path donde queremos navegar, esto con base a la prop que recibe el home envuelto en el router
+          : categories.map(category => <Item key={category.id}><Category {...category} path={`/pet/${category.id}`} /></Item>)
       }
     </List>
   )

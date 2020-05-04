@@ -1,25 +1,57 @@
 import React from 'react'
-import { ListOfCategories } from './components/ListOfCategories/ListOfCategories'
+import { Router } from '@reach/router'
+
 import { GlobalStyle } from './styles/GlobalStyles'
-// Aqui estoy importando mi ContainerOfPhotoCards para renderizar mi componente HOC con el fectching realizado y asimismo el renderizado
-import { ContainerOfPhotoCards } from './container/ContainerOfPhotoCards'
+
 import { Logo } from './components/Logo/Logo'
-// Importaremos mi container componente PhotoCardWithQuery
-import { PhotoCardWithQuery } from './container/PhotoCardWithQuery'
+import { NavBar } from './components/NavBar/NavBar'
 
+import { Detail } from './pages/Detail'
+import { Home } from './pages/Home'
+// Importo mis pages
+import { Favs } from './pages/Favs'
+import { User } from './pages/User'
+import { NotRegisteredUser } from './pages/NotRegisteredUser'
+// Crearemos una constante la cual va a recibir el children (mi render props), este simplemente va a hacer lo que tenga que renderizar como una función
+const UserLogged = ({ children }) => {
+  // A children le pasaremos como parametro si está autenticado el usuario o no, por defecto false
+  return children({ isAuth: false })
+}
 export const App = () => {
-  // Haremos uso de url params, le cual lo obtenemos a partir de window, URLSearchParams recibe un parámetro el cual será la query string de la barra de direcciones
-  const urlParams = new window.URLSearchParams(window.location.search)
-  // Recuperaremos el detail id al que estamos navegando
-  const detailId = urlParams.get('detail')
-
   return (
     <div>
       <GlobalStyle />
       <Logo />
-      {/* Si tenemos un detail id, lo evaluaremos y mostraremos el componente requerido de acuerdo al query si no renderizaremso lo que ya teniamos previamente */}
-      {/* Le pasaremos la id del detalle por parámetro a nuestro componente */}
-      {detailId ? <PhotoCardWithQuery id={detailId} /> : <><ListOfCategories /><ContainerOfPhotoCards categoryId={1} /></>}
+      <Router>
+        <Home path='/' />
+        <Home path='/pet/:categoryId' />
+        <Detail path='/detail/:detailId' />
+      </Router>
+      {/* UserLogged lo usaremos como un componente dentro de la app de forma que  */}
+      <UserLogged>
+        {/* User logged necesita un children que es la función, la función recibe un parametro para saber si está autenticado o no */}
+        {
+          // Recuperaremos el objeto que tiene la propiedad isAuth
+          ({ isAuth }) =>
+          // Este objeto tiene que renderizar si está autenticado un router con el acceso a los 2 componentes de fav y user
+            isAuth
+              ? <Router>
+                {/* Añadimos las rutas protegidas */}
+                <Favs path='/favs' />
+                <User path='/user' />
+                {/* eslint-disable-next-line react/jsx-closing-tag-location */}
+              </Router>
+            // Si no está autenticado lo que va a renderizar va a ser un router donde va a tener acceso a estas rutas donde no está autenficado
+              : <Router>
+                {/* NotRegisteredUser debería estar tanto en favs como en user */}
+                <NotRegisteredUser path='/favs' />
+                <NotRegisteredUser path='/user' />
+                {/* eslint-disable-next-line react/jsx-closing-tag-location */}
+              </Router>
+
+        }
+      </UserLogged>
+      <NavBar />
     </div>
   )
 }
