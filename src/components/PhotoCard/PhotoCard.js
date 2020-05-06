@@ -2,25 +2,27 @@ import React from 'react'
 import { Article, ImgWrapper, Img } from './styles'
 // Importo mi componente Link de Reach Router
 import { Link } from '@reach/router'
-import { useLocalStorage } from '../../hooks/useLocalStorage'
+// Puesto que ya no usaremos local storage para almacenar los likes, este hook no nos servirá
+// import { useLocalStorage } from '../../hooks/useLocalStorage'
 import { useNearScreen } from '../../hooks/useNearScreen'
 import { FavButton } from '../FavButton/FavButton'
 import { ToggleLikeMutation } from '../../container/ToggleLikeMutation'
 
 const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60'
 
-export const PhotoCard = ({ id, likes = 0, src = DEFAULT_IMAGE }) => {
+// Recibiremos el liked por las props ya que la petición nos devolverá esta información desde el servidor
+export const PhotoCard = ({ id, liked, likes = 0, src = DEFAULT_IMAGE }) => {
   const [show, element] = useNearScreen()
-  const key = `like-${id}`
+  // Puesto que ya no usaremos local storage para almacenar los likes, este hook no nos servirá
 
-  const [liked, setLiked] = useLocalStorage(key, false)
+  // const key = `like-${id}`
+  // const [liked, setLiked] = useLocalStorage(key, false)
 
   return (
     <Article ref={element}>
       {
         show &&
           <>
-            {/* ahora usaremos un Link para usar mi Reach Router y mi SPA de una manera optima y asimismo cambiaremos la ruta a donde quiero ir al presionac click */}
             <Link to={`/detail/${id}`}>
               <ImgWrapper>
                 <Img src={src} />
@@ -31,13 +33,16 @@ export const PhotoCard = ({ id, likes = 0, src = DEFAULT_IMAGE }) => {
               {
                 (toggleLike) => {
                   const handleFavClick = () => {
-                    !liked && toggleLike({
+                    // !liked && -> ya no usaremos está parte ya que ya no queremos validar si no nos está gustando el like
+                    toggleLike({
                       variables: {
                         input: { id }
                       }
                     })
-                    setLiked(!liked)
+                    // Puesto que ya no usaremos local storage para almacenar los likes, este hook con el envio de actualización de estado no lo usaremos más
+                    // setLiked(!liked)
                   }
+                  // El liked que se le envia al fav button se recibirá desde las props
                   return <FavButton liked={liked} likes={likes} onClick={handleFavClick} />
                 }
               }
