@@ -7,5 +7,31 @@
     </head>
     <body>
         <div id="app"></div>
+        <noscript>
+            <h3>
+                Esta app necesita JavaScript para funcionar, por favor actívalo
+                en las opciones de configuración del navegador
+            </h3>
+        </noscript>
+        <!-- Añadimos un script para cargar el service worker que estamos generando -->
+        <script>
+            // Lo primero que vamos a hacer es asegurarnos si el navegador es compatible con los service worker,
+            if ("serviceWorker" in navigator) {
+                // Si esta validación es true, vamos a ejecutar el evento de load, de forma que cuando se cargue nuestra página se ejecute la función que le estoy enviando por parámetro al addEventListener
+                window.addEventListener("load", function () {
+                    // Esta función lo que hará es registrar el service worker que hemos creado
+                    navigator.serviceWorker
+                        .register("./service-worker.js")
+                        // Vamos también a validar si el SW se ha podido cargar completamente, como register devuelve una promesa si se ha registrado correctamenre
+                        .then((registration) => {
+                            console.log("SW REGISTRADO");
+                        })
+                        //  Si no se ha registrado correctamente saltaremos el catch con un error, el cual vamos a tratar
+                        .catch((registrationError) => {
+                            console.log("Error", registrationError);
+                        });
+                });
+            }
+        </script>
     </body>
 </html>

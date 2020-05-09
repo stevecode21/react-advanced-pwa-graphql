@@ -1,17 +1,22 @@
 import React from 'react'
-// Llamo mis iconos de React Icons
 import { MdFavoriteBorder, MdFavorite } from 'react-icons/md'
-// Aqui Llamaré el estilado de mi Button
 import { Button } from './styles'
-// Exportaremos el component FavButton, pasandole por props toda la información que necesitamos mostrar que es si nos gusta esta foto (Liked), el numero de likes (likes) y el evento que queremos que haga al hacer un click
-// Esta función devolverá
+// Importo la dependencia de las proptypes
+import PropTypes from 'prop-types'
+
 export const FavButton = ({ liked, likes, onClick }) => {
-  // Eso lo extraemos del componente PhotoCard decidiendo así que icono queremos mostrar dependendiendo de si el state de liked es true o false
   const Icon = liked ? MdFavorite : MdFavoriteBorder
-  // En este caso onClick no le pasaremos el evento si no lo que venga por props
   return (
     <Button onClick={onClick}>
       <Icon size='32px' />{likes} likes!
     </Button>
   )
+}
+// Tenemos el componente FavButton y ahora usaremos las proptypes, le famos a asignal un objeto, el cual va a especificar cuales son las props que le llegan
+FavButton.propTypes = {
+  // El valor es el tipo, para eso usamos PropTypes para indicar cual es el tipo de cada prop, en este caso (boolean, number y function)
+  // Le añado otrao propiedad llamada isRequired para decirle a mi proptypes que esta prop es NECESARIA para que mi componente funcione correctamente
+  liked: PropTypes.bool.isRequired,
+  likes: PropTypes.number.isRequired,
+  onClick: PropTypes.func.isRequired
 }

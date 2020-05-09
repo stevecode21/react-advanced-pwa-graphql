@@ -1,20 +1,30 @@
 import React from 'react'
 import { Grid, Image, Link } from './styles'
-// Exportamos el componente nombrado, lo unico que va a recibir va a ser los favs que tiene que renderizar, estos favs serán un array vacío por defecto para evitar problemas
+// Importo la dependencia de prop types
+import PropTypes from 'prop-types'
 export const ListOfFavs = ({ favs = [] }) => {
   return (
-    // Envolveré la vista en un componente Grid estilado
     <Grid>
       {
-        // Todos los favoritos estarán envueltos en un Link, la cual tendrá la key y al presionar tendrán que ir a la ruta detail de cada uno de los id del fav
-        // Vamos a hacer un map de toda esta información, y por cada favorito que tengamos vamos a enseñar una imagen con una key unica, obteniendo así también el source en donde está la imagen del favorito
         favs.map(fav =>
           <Link key={fav.id} to={`/detail/${fav.id}`}>
-            {/* Utilizo mi elemento Image */}
             <Image src={fav.src} />
           </Link>
         )
       }
     </Grid>
+  )
+}
+
+ListOfFavs.propTypes = {
+  // Aqui le digo que favs es un prop de tipo array, para arreglar el hecho de que prop types sepa qué tipo de datos se están enviando por el array, usaremos arrayOf, y le decimos cual es la forma que debe tener el array
+  favs: PropTypes.arrayOf(
+    // En este caso le estamos diciendo que la forma de este array es de un objeto y van a tener una forma
+    PropTypes.shape({
+      // Forma la cual tendrá una propiedad id de tipo string y requerida
+      id: PropTypes.string.isRequired,
+      // Src también será de tipo string
+      src: PropTypes.string.isRequired
+    })
   )
 }

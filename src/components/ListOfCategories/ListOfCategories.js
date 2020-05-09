@@ -1,4 +1,3 @@
-// Añadimos el useEffect
 import React, { useState, useEffect } from 'react'
 import { Category } from '../Category/Category'
 import { List, Item, Loading } from './styles'
@@ -22,7 +21,8 @@ function useCategoriesData () {
   return { categories, loading }
 }
 
-export const ListOfCategories = () => {
+// Lo dejaremos de exportar y le cambiaremos el nombre al componente de ListOfCategories a  ListOfCategoriesComponent
+const ListOfCategoriesComponent = () => {
   const { categories, loading } = useCategoriesData()
   const [showFixed, setShowFixed] = useState(false)
 
@@ -40,7 +40,6 @@ export const ListOfCategories = () => {
       {
         loading
           ? <Loading><Skeleton circle height={75} width={75} duration={100} /><Skeleton height={20} width={75} duration={100} /></Loading>
-          // Al componente Category vamos a pasarle una nueva prop llamada path en donde vamos a construir el path donde queremos navegar, esto con base a la prop que recibe el home envuelto en el router
           : categories.map(category => <Item key={category.id}><Category {...category} path={`/pet/${category.id}`} /></Item>)
       }
     </List>
@@ -53,3 +52,7 @@ export const ListOfCategories = () => {
     </>
   )
 }
+
+// Lo que exportaremos será ListOfCategories y esto será el resultado de ejecutar React.memo(), y le pasamos el componente que queremos memorizar, que basicamente es recordar como estaba anteriormente sin necesidad de cambiar sus props
+/* Básicamente le decimos "No quiero que te vuelvas a renderizar si las props no son diferentes" */
+export const ListOfCategories = React.memo(ListOfCategoriesComponent)

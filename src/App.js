@@ -1,5 +1,6 @@
-import React from 'react'
-import { Router } from '@reach/router'
+// Importo Suspense, desde React, el cual nos va a permitir renderizar algo mientras un componente está en modo de suspensión, es decir que todavía no está cargado por lo tanto no está listo para renderizarse
+import React, { useContext, Suspense } from 'react'
+import { Router, Redirect } from '@reach/router'
 
 import { GlobalStyle } from './styles/GlobalStyles'
 
@@ -8,42 +9,38 @@ import { NavBar } from './components/NavBar/NavBar'
 
 import { Detail } from './pages/Detail'
 import { Home } from './pages/Home'
-import { Favs } from './pages/Favs'
+// import { Favs } from './pages/Favs'
 import { User } from './pages/User'
 import { NotRegisteredUser } from './pages/NotRegisteredUser'
-// Importro mi context para acceder al Consumer
-import Context from './Context'
+import { NotFound } from './pages/NotFound'
+import { Context } from './Context'
+
+// Aqui vamos a importar Favs de una forma distinta usando React.lazy, el cual necesita una funcion que devuelva un import dinámico para funcionar, esto evitará cargar la página hasta que no la necesitemos
+const Favs = React.lazy(() =>
+// Uso mi import dinámico para llamar mi componente Fav.js
+  import('./pages/Favs')
+)
 
 export const App = () => {
+  const { isAuth } = useContext(Context)
   return (
-    <div>
+    // Usamos Suspense aqui en lugar del div, Suspense necesita una prop la cual es fallback -> Esto es lo que renderizará mientras está cargando el componente, en este caso un div
+    <Suspense fallback={<div />}>
       <GlobalStyle />
       <Logo />
       <Router>
+        <NotFound default />
         <Home path='/' />
         <Home path='/pet/:categoryId' />
         <Detail path='/detail/:detailId' />
+        {!isAuth && <NotRegisteredUser path='/login' />}
+        {!isAuth && <Redirect noThrow from='/favs' to='/login' />}
+        {!isAuth && <Redirect noThrow from='/user' to='/login' />}
+        {isAuth && <Redirect noThrow from='/login' to='/' />}
+        <Favs path='/favs' />
+        <User path='/user' />
       </Router>
-      {/* Context.Consumer tiene la misma render prop que tenia el componente que estabamos utilizando antes (UserLogged) asi que no tenemos que hacer ningun cambio */}
-      <Context.Consumer>
-        {
-          // A la render prop le llegan todos los values que habiamos puesto en el provider que era si está autenticado o no
-          ({ isAuth }) =>
-            isAuth
-              ? <Router>
-                <Favs path='/favs' />
-                <User path='/user' />
-                {/* eslint-disable-next-line react/jsx-closing-tag-location */}
-              </Router>
-              : <Router>
-                <NotRegisteredUser path='/favs' />
-                <NotRegisteredUser path='/user' />
-                {/* eslint-disable-next-line react/jsx-closing-tag-location */}
-              </Router>
-
-        }
-      </Context.Consumer>
       <NavBar />
-    </div>
+    </Suspense>
   )
 }
